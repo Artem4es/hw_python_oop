@@ -75,6 +75,9 @@ class Running(Training):
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
 
+    COEFF_CALORIE_1: float = 0.035
+    COEFF_CALORIE_2: float = 0.029
+
     def __init__(self,
                  action: int,
                  duration: float,
@@ -86,10 +89,8 @@ class SportsWalking(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        coeff_calorie_1: float = 0.035
-        coeff_calorie_2: float = 0.029
-        return ((coeff_calorie_1 * self.weight + (self.get_mean_speed() ** 2
-                // self.height) * coeff_calorie_2 * self.weight)
+        return ((self.COEFF_CALORIE_1 * self.weight + (self.get_mean_speed()
+                ** 2 // self.height) * self.COEFF_CALORIE_2 * self.weight)
                 * (self.duration * self.HOUR_TO_MIN))
 
 
@@ -121,19 +122,19 @@ class Swimming(Training):
                 * self.COEFF_CALORIE_2 * self.weight)
 
 
-training_types: Dict[str, Type[Training]] = {
-    'SWM': Swimming,
-    'RUN': Running,
-    'WLK': SportsWalking
-}
-
-
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
+
+    training_types: Dict[str, Type[Training]] = {
+        'SWM': Swimming,
+        'RUN': Running,
+        'WLK': SportsWalking
+    }
+
     if workout_type in training_types:
         return training_types[workout_type](*data)
-    else:
-        raise ValueError(f'Тип тренировки {workout_type} не существует')
+
+    raise ValueError(f'Тип тренировки {workout_type} не существует')
 
 
 def main(training: Training) -> None:
